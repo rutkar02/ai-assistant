@@ -1,4 +1,4 @@
-def build_prompt(conversation,memory):
+def build_prompt(conversation,memory,knowledge):
     prompt = f"""
     Below is the conversation history between you and the user.
 
@@ -11,6 +11,13 @@ def build_prompt(conversation,memory):
 
     Relevant Memories:
     {memory}
+
+    The following knowledge is related to the documents uploaded by the user,
+    Treat them as background context. Do not assume they are part
+    of the conversation itself
+
+    Relevant knowledge
+    {knowledge}
     """
 
     return prompt

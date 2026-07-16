@@ -1,5 +1,5 @@
 from config import TOP_K,Embedding_Model
-from chroma_db import collection
+from chroma_db import memory_collection
 from model import call_model
 import uuid
 
@@ -9,7 +9,7 @@ def create_embedding(text,client):
 
 def retrieve_memory(question,client):
     question_embedding = create_embedding(question,client)
-    result = collection.query(
+    result = memory_collection.query(
         query_embeddings=[question_embedding],
         n_results=TOP_K
     )
@@ -57,7 +57,7 @@ def extract_memory(message,client):
 
 def save_memory(message):
     unique_id = str(uuid.uuid4())
-    collection.add(
+    memory_collection.add(
         documents=[message],
         ids=[unique_id]
     )
