@@ -1,8 +1,10 @@
 from model import call_model
-from mcp_client import call_tool
+# from mcp_client import call_tool
+from mcp_manager import MCPManager
 # from pprint import pprint
 
-async def run_agent_loop(messages,previous_response_id,session,tools,client):
+async def run_agent_loop(messages,previous_response_id,manager,client):
+    tools = manager.discover_tools()
     while True:
         response = call_model(messages,previous_response_id,tools,client)
         tool_calls = False
@@ -10,7 +12,7 @@ async def run_agent_loop(messages,previous_response_id,session,tools,client):
         for item in response.output:
             if item.type=="function_call":
                 tool_calls=True
-                result = await call_tool(session,item.name,item.arguments)
+                result = await manager.call_tool(item.name,item.arguments)
                 # pprint(result)
                 # pprint(type(result))
                 messages.append({
