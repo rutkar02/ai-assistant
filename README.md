@@ -36,15 +36,15 @@ Assistant
 
 # ✅ Features Implemented
 
-- OpenAI Responses API
-- Modular Agent Loop
-- MCP Integration
-- Dynamic Tool Discovery
-- Tool Calling
-- Semantic Memory
-- ChromaDB Vector Database
-- Prompt Builder
-- Modular Architecture
+- OpenAI Responses API integration
+- MCP-based tool calling
+- Dynamic MCP tool discovery
+- MCP Manager for extensible multi-server architecture
+- Semantic Memory (ChromaDB)
+- Knowledge Retrieval (RAG)
+- Context Builder
+- Local Command Router
+- Modular AI Assistant Architecture
 
 ---
 

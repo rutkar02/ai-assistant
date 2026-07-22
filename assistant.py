@@ -6,6 +6,7 @@ from context import build_context
 from knowledge import retrieve_knowledge
 from commands import handle_command
 from mcp_manager import MCPManager
+from config import server
 # from pprint import pprint
 
 load_dotenv()
@@ -18,13 +19,17 @@ class Assistant:
         self.manager = MCPManager()   
 
     async def initialize(self):
-        await self.manager.connect_server("server")        
-        await self.manager.discover_tools()
+        result = await self.manager.initialize(server)
+        if not result.success:
+            print("Some Mcp servers failed to initialize")     
 
     async def chat(self):
         while True:
             user = input("> ")    
-            if user.lower() == "end":
+            # ✅ Allow multiple exit keywords
+            if user.lower().strip() in ["end", "exit", "quit", "q"]:
+                print("Goodbye!")
+                await self.manager.close()  # Cleanly close MCP sessions!
                 break
             result = handle_command(user,self.client)
             if(result.handled):

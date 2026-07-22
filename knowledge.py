@@ -18,35 +18,48 @@ def create_embedding(text,client):
     return response.data[0].embedding
 
 
-def ingest_document(pdf_path,client):
-    pdf_name = Path(pdf_path).stem
-    reader = PdfReader(pdf_path)
-    text = ""
-    for page in reader.pages:
-        page_text = page.extract_text()
-        if page_text:
-            text+=page_text + "\n"
-
+def ingest_text(text,metadata,client):
+    document_name = metadata["document_name"]
     chunks = create_chunks(text,Chunk_Size)
     embeddings = []
     documents = []
     ids = []
-    i = 1
-    for chunk in chunks:
+
+    for i, chunk in enumerate(chunks, start = 1):  # starts i from 1
         embedding = create_embedding(chunk,client)
         embeddings.append(embedding)
         documents.append(chunk)
-        ids.append(f"{pdf_name}_{i}")
+        ids.append(f"{document_name}_{i}")
         i+=1
 
     knowledge_collection.add(
         ids = ids,
         documents=documents,
         embeddings=embeddings,
-        metadatas= [{"pdf_name":pdf_name} for _ in range(len(documents))]
+        metadatas= [{"document_name":document_name} for _ in range(len(documents))]
     )
+    return f"""
+    Stored {document_name}
+    {len(chunks)} chunks
+    {len(embeddings)} embeddings
+    Knowledge base updated
+    """
 
+def extract_text_from_pdf(pdf_path):
+    reader = PdfReader(pdf_path)
+    text = ""
+    for page in reader.pages:
+        page_text = page.extract_text()
+        if page_text:
+            text+=page_text + "\n"
+    return text        
 
+def ingest_document(pdf_path,client):
+    text = extract_text_from_pdf(pdf_path)
+    return ingest_text(
+        text=text,
+        metadata={"document_name": Path(pdf_path).stem},
+        client = client)
     
 def retrieve_knowledge(question,client,documents=None):
     question_embedding = create_embedding(question,client)
@@ -60,7 +73,7 @@ def retrieve_knowledge(question,client,documents=None):
         Metadata: {results["metadatas"][0][i]} 
         Document: {results["documents"][0][i]}
 """
-    return results
+    return text
 
 def delete_document():
     pass

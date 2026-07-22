@@ -1,10 +1,8 @@
 from model import call_model
-# from mcp_client import call_tool
-from mcp_manager import MCPManager
 # from pprint import pprint
 
 async def run_agent_loop(messages,previous_response_id,manager,client):
-    tools = manager.discover_tools()
+    tools = manager.get_tools()
     while True:
         response = call_model(messages,previous_response_id,tools,client)
         tool_calls = False
